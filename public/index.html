@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Library Management System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+   <div id="loginSection" class="login-wrapper">
+    <div class="login-card">
+        <h2>Library Login</h2>
+        <select id="role">
+            <option value="admin">Admin</option>
+            <option value="student">Student</option>
+        </select>
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="login()">Login</button>
+    </div>
+</div>
+    <div id="librarySection" style="display:none;">
+        <div class="top-bar">
+            <h1>Library Management</h1>
+            <span id="sessionTimer"></span>
+            <div class="user-info">
+            <span id="userEmail"></span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
+        <div class="container">
+            <div class="add-book">
+                <h2>Add a Book</h2>
+                <input type="text" id="title" placeholder="Book Title">
+                <input type="text" id="author" placeholder="Author Name">
+                <button class="add-btn" onclick="addBook()">Add Book</button>
+            </div>
+            <div class="book-list">
+                <h2>Book List</h2>
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Search by title or author">
+                    <button onclick="searchBooks()">Search</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bookList"></tbody>
+                </table>
+                <button class="clear-btn" onclick="clearAll()">Clear All Books</button>
+            </div>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
