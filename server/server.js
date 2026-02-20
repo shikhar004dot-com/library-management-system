@@ -1,16 +1,19 @@
 require("dotenv").config();
-const express = require("express");
-const path = require("path");
-const libraryRoutes = require("./routes/libraryRoutes");
-const authRoutes = require("./routes/authRoutes");
+require("./config/db");
+const express=require("express");
+const cors=require("cors");
+const path=require("path");
+const app=express()
 
-const app = express();
+app.use(cors())
+app.use(express.json())
+app.use(express.static(path.join(__dirname,"../public")))
 
-app.use(express.json());
-app.use(express.static(path.join(__dirname, "../public")));
-app.use("/", authRoutes);
-app.use("/", libraryRoutes);
+const libraryRoutes=require("./routes/libraryRoutes")
+const authRoutes=require("./routes/authRoutes")
 
-app.listen(process.env.PORT || 8000, () => {
-    console.log("Server running");
-});
+app.use("/",authRoutes)
+app.use("/",libraryRoutes)
+app.listen(process.env.PORT||8000,()=>{
+    console.log("Server running")
+})

@@ -42,7 +42,6 @@ function applyRoleUI(){
         document.querySelector(".clear-btn").style.display="inline-block"
     }
 }
-
 async function login(){
     const role=document.getElementById("role").value
     const email=document.getElementById("email").value
