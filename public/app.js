@@ -1,4 +1,4 @@
-const BASE_URL = "https://your-new-domain.up.railway.app"
+const BASE_URL="http://localhost:8000"
 window.onload=()=>{
     const token=sessionStorage.getItem("token")
     const role=sessionStorage.getItem("role")
