@@ -76,7 +76,6 @@ async function login() {
         sessionStorage.setItem("expiry", expiryTime);
 
         showLibrary();
-
         document.getElementById("userEmail").innerText =
             data.role + " (" + email + ")";
 
@@ -91,6 +90,7 @@ async function login() {
 async function displayBooks() {
     const response = await fetch(`${BASE_URL}/library-read`);
     const result = await response.json();
+
     renderBooks(result.data || []);
 }
 
@@ -111,10 +111,10 @@ function renderBooks(books) {
                     ${
                         role === "admin"
                             ? `
-                            <button onclick="issueBook('${book._id}')">Issue</button>
-                            <button onclick="returnBook('${book._id}')">Return</button>
-                            <button onclick="deleteBook('${book._id}')">Delete</button>
-                            `
+                                <button onclick="issueBook('${book._id}')">Issue</button>
+                                <button onclick="returnBook('${book._id}')">Return</button>
+                                <button onclick="deleteBook('${book._id}')">Delete</button>
+                              `
                             : "View Only"
                     }
                 </td>
@@ -263,6 +263,7 @@ function startCountdown() {
             "s";
     }, 1000);
 }
+
 function logout() {
     sessionStorage.clear();
     showLogin();
