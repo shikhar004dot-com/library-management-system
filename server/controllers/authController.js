@@ -1,7 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-const ADMIN_EMAIL="shikharsrivastava816@gmail.com";
+const ADMIN_EMAIL="admin@gmail.com";
 const ADMIN_PASSWORD=bcrypt.hashSync("admin123", 8);
 
 exports.adminLogin=async(req,res)=>{
