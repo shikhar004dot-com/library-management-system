@@ -1,5 +1,4 @@
-const BASE_URL = "";
-
+const BASE_URL = "https://library-management-system-production.up.railway.app";
 window.onload = () => {
     const token = sessionStorage.getItem("token");
     const role = sessionStorage.getItem("role");
