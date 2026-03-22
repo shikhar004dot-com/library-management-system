@@ -1,9 +1,10 @@
 const BASE_URL = "https://library-management-system-production-b678.up.railway.app";
+
 window.onload = () => {
-    const token = sessionStorage.getItem("token");
-    const role = sessionStorage.getItem("role");
-    const email = sessionStorage.getItem("email");
-    const expiry = sessionStorage.getItem("expiry");
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
+    const email = localStorage.getItem("email");
+    const expiry = localStorage.getItem("expiry");
 
     if (!token || !expiry) {
         showLogin();
@@ -35,7 +36,7 @@ function showLibrary() {
 }
 
 function applyRoleUI() {
-    const role = sessionStorage.getItem("role");
+    const role = localStorage.getItem("role");
 
     if (role === "student") {
         document.querySelector(".add-book").style.display = "none";
@@ -54,25 +55,28 @@ async function login() {
     const endpoint =
         role === "admin" ? "/admin-login" : "/student-login";
 
-    const res = await fetch(BASE_URL + endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-    });
+    try {
+        const res = await fetch(BASE_URL + endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password })
+        });
 
-    const data = await res.json();
+        const data = await res.json();
+        console.log("LOGIN RESPONSE:", data);
 
-    if (data.token) {
-        const payload = JSON.parse(
-            atob(data.token.split(".")[1])
-        );
+        if (!data.token) {
+            alert(data.message || "Login failed");
+            return;
+        }
 
+        const payload = JSON.parse(atob(data.token.split(".")[1]));
         const expiryTime = payload.exp * 1000;
 
-        sessionStorage.setItem("token", data.token);
-        sessionStorage.setItem("role", data.role);
-        sessionStorage.setItem("email", email);
-        sessionStorage.setItem("expiry", expiryTime);
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("role", data.role);
+        localStorage.setItem("email", email);
+        localStorage.setItem("expiry", expiryTime);
 
         showLibrary();
         document.getElementById("userEmail").innerText =
@@ -81,21 +85,22 @@ async function login() {
         applyRoleUI();
         displayBooks();
         startCountdown();
-    } else {
-        alert(data.message);
+
+    } catch (err) {
+        console.error("LOGIN ERROR:", err);
+        alert("Something went wrong");
     }
 }
 
 async function displayBooks() {
     const response = await fetch(`${BASE_URL}/library-read`);
     const result = await response.json();
-
     renderBooks(result.data || []);
 }
 
 function renderBooks(books) {
     const bookList = document.getElementById("bookList");
-    const role = sessionStorage.getItem("role");
+    const role = localStorage.getItem("role");
 
     bookList.innerHTML = "";
 
@@ -122,34 +127,17 @@ function renderBooks(books) {
     });
 }
 
-async function searchBooks() {
-    const keyword =
-        document.getElementById("searchInput").value.toLowerCase();
-
-    const response = await fetch(`${BASE_URL}/library-read`);
-    const result = await response.json();
-
-    const filtered = (result.data || []).filter(book =>
-        book.title.toLowerCase().includes(keyword) ||
-        book.author.toLowerCase().includes(keyword)
-    );
-
-    renderBooks(filtered);
-}
-
 async function addBook() {
-    const title =
-        document.getElementById("title").value.trim();
-
-    const author =
-        document.getElementById("author").value.trim();
+    const title = document.getElementById("title").value.trim();
+    const author = document.getElementById("author").value.trim();
 
     if (!title || !author) {
         alert("Please fill out both fields.");
         return;
     }
 
-    const token = sessionStorage.getItem("token");
+    const token = localStorage.getItem("token");
+    console.log("TOKEN:", token);
 
     const res = await fetch(`${BASE_URL}/library-insert`, {
         method: "POST",
@@ -161,6 +149,7 @@ async function addBook() {
     });
 
     if (res.status === 401 || res.status === 403) {
+        alert("Session expired. Please login again.");
         logout();
         return;
     }
@@ -172,7 +161,7 @@ async function addBook() {
 }
 
 async function issueBook(id) {
-    const token = sessionStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
     await fetch(`${BASE_URL}/library-update/${id}`, {
         method: "PUT",
@@ -187,8 +176,7 @@ async function issueBook(id) {
 }
 
 async function returnBook(id) {
-    const token = sessionStorage.getItem("token");
-
+    const token = localStorage.getItem("token");
     await fetch(`${BASE_URL}/library-update/${id}`, {
         method: "PUT",
         headers: {
@@ -204,7 +192,7 @@ async function returnBook(id) {
 async function deleteBook(id) {
     if (!confirm("Are you sure you want to delete this book?")) return;
 
-    const token = sessionStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
     await fetch(`${BASE_URL}/library-delete/${id}`, {
         method: "DELETE",
@@ -215,12 +203,9 @@ async function deleteBook(id) {
 
     displayBooks();
 }
-
 async function clearAll() {
     if (!confirm("Are you sure you want to clear all entries?")) return;
-
-    const token = sessionStorage.getItem("token");
-
+    const token = localStorage.getItem("token");
     await fetch(`${BASE_URL}/library-clearall`, {
         method: "DELETE",
         headers: {
@@ -232,13 +217,10 @@ async function clearAll() {
 }
 
 function startCountdown() {
-    const timerElement =
-        document.getElementById("sessionTimer");
+    const timerElement = document.getElementById("sessionTimer");
 
     const interval = setInterval(() => {
-        const expiry =
-            sessionStorage.getItem("expiry");
-
+        const expiry = localStorage.getItem("expiry");
         const remaining = expiry - Date.now();
 
         if (remaining <= 0) {
@@ -248,22 +230,15 @@ function startCountdown() {
             return;
         }
 
-        const minutes =
-            Math.floor(remaining / 60000);
-
-        const seconds =
-            Math.floor((remaining % 60000) / 1000);
+        const minutes = Math.floor(remaining / 60000);
+        const seconds = Math.floor((remaining % 60000) / 1000);
 
         timerElement.innerText =
-            "Session expires in: " +
-            minutes +
-            "m " +
-            seconds +
-            "s";
+            "Session expires in: " + minutes + "m " + seconds + "s";
     }, 1000);
 }
 
 function logout() {
-    sessionStorage.clear();
+    localStorage.clear();
     showLogin();
 }
