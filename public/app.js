@@ -160,6 +160,22 @@ async function addBook() {
     displayBooks();
 }
 
+async function searchBooks() {
+    const keyword =
+        document.getElementById("searchInput").value.toLowerCase();
+    const response = await fetch(`${BASE_URL}/library-read`);
+    const result = await response.json();
+
+    const filtered = (result.data || []).filter(book => {
+        const title = (book.title || "").toLowerCase();
+        const author = (book.author || "").toLowerCase();
+
+        return title.includes(keyword) || author.includes(keyword);
+    });
+
+    renderBooks(filtered);
+}
+
 async function issueBook(id) {
     const token = localStorage.getItem("token");
 
