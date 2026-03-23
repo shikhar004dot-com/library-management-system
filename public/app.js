@@ -1,4 +1,4 @@
-const BASE_URL = "https://library-management-system-production-b678.up.railway.app";
+const BASE_URL = "https://library-management-system-750k.onrender.com";
 
 window.onload = () => {
     const token = localStorage.getItem("token");
