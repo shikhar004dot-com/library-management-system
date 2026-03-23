@@ -12,8 +12,6 @@ app.use(cors({
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: true
 }));
-
-app.options("*", cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "../public")));
 
@@ -31,4 +29,7 @@ const startServer=async()=>{
     console.log("Failed to connect DB", err);
   }
 };
+app.use((req, res) => {
+  res.status(404).json({ message: "Route not found" });
+});
 startServer();
