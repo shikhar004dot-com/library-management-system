@@ -10,7 +10,7 @@ A full-stack web application for managing library operations with authentication
 - Real-time Search
 - Student View (read-only)
 - Fast UI with localStorage session
--  Deployed on Railway
+-  Deployed on Render
 
 ---
 ## Tech Stack
